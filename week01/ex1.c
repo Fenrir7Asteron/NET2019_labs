@@ -5,7 +5,6 @@
 
 #define MAX_SIZE 256
 #define COMMAND_SIZE 16
-#define ACKNOWLEDGE_SIZE 8
 
 int main() {
     char* client_command = malloc(sizeof(COMMAND_SIZE));
@@ -52,7 +51,6 @@ int main() {
     } else {  	  // child (server)
         int stack[MAX_SIZE];
         int stack_size = -1;
-        int res;
         
         while (1) {
             server_command = malloc(sizeof(COMMAND_SIZE));
