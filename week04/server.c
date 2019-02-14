@@ -2,12 +2,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <memory.h>
 #include <errno.h>
-#include <zconf.h>
 #include "common.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -153,7 +153,7 @@ setup_tcp_server_communication() {
                 /* If the client sends a special msg to server, then server close the client connection
                  * for forever*/
                 /*Step 9 */
-                if (client_data->a == 0 && client_data->b == 0) {
+                if (client_data->age == 0) {
 
                     close(comm_socket_fd);
                     printf("Server closes connection with client : %s:%u\n", inet_ntoa(client_addr.sin_addr),
@@ -163,7 +163,9 @@ setup_tcp_server_communication() {
                 }
 
                 result_struct_t result;
-                result.c = client_data->a + client_data->b;
+		strcpy(result.name, client_data->name);
+                result.age = 12;
+		strcpy(result.group, client_data->group);
 
                 /* Server replying back to client now*/
                 sent_recv_bytes = sendto(comm_socket_fd, (char *) &result, sizeof(result_struct_t), 0,
