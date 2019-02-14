@@ -52,12 +52,12 @@ void setup_tcp_communication() {
 
 	    /*Prompt the user to enter data*/
 	    /*You will want to change the promt for the second task*/
-	    printf("Enter name : ?\n");
-	    scanf("%s", &client_data.name);
-	    printf("Enter age : ?\n");
+	    printf("Enter name : ");
+	    scanf("%s", client_data.name);
+	    printf("Enter age : ");
 	    scanf("%u", &client_data.age);
-	    printf("Enter group : ?\n");
-	    scanf("%u", &client_data.group);
+	    printf("Enter group : ");
+	    scanf("%s", client_data.group);
 	    
 	    /*step 5 : send the data to server*/
 	    /*Again, keep in mind the type of our msg*/
@@ -84,7 +84,10 @@ void setup_tcp_communication() {
 
 	    printf("No of bytes received = %d\n", sent_recv_bytes);
 	    
-	    printf("Result received = %u\n", result.c);
+	    printf("Result received\n");
+	    printf("Name: %s\n", result.name);
+	    printf("Age: %u\n", result.age);
+	    printf("Group: %s\n", result.group);
     }
 }
     
