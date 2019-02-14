@@ -1,0 +1,27 @@
+int socket (int domain, int type, int protocol);
+socket() creates a socket and returns file descriptor of it (socket descriptor). socket() recieves 3 parameters:
+1. `domain` is chosen according to our environment. Is it one OS (AF-UNIX) or internet (AF-INET);
+2. `type shows` how stream of data should be shiped, concurrently (SOCK_STREAM) or in any order in datagrams (SOCK_DGRAM);
+3. `protocol` is a transport protocol of our choice. If it is zero, protocol will be chosen automatically.
+If it returns -1 than socket was not created.
+
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+accept() is used when some data arrives on the socket that server listens. It happens when some client issues connect() system call. accept() returns new socket descriptor for exchanging messages with client. It receives 3 parameters:
+1. `sockfd` is a socket descriptor to which arrived a request for connection;
+2. `addr` is a pointer to data structure where we store information about a client;
+3. `addrlen` is a length of `addr`.
+`addr` and `addrlen` are filled during the connection with client.
+This system call can be blocking and can be not.
+If it returns negative number socket descriptor was not created and something went wrong with connection
+
+int select(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
+select() is a blocking call that waits when some file descriptors are either ready for reading, ready for writing or having some errors. It returns 0 is timeout expires, -1 if error happens, and number of triggered (i.e. ready for read) file descriptors. It receives 4 parameters:
+1-3 are sets of file descriptors for read, write and errors;
+4. `timeout` shows for how long program will be blocked on select() in case if nothing happens to file descriptors.
+
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+bind() binds information about our client or server to a new socket. Remember that socket() call does not know anything about ip, port and so on. It returns -1 in case of binding error. It receives 3 parameters (they are the same as in accept):
+1. `sockfd` is a socket descriptor to which we bind address;
+2. `addr` is a pointer to data structure where we store information about a client or server which we bind;
+3. `addrlen` is a length of `addr`.
+
