@@ -7,7 +7,7 @@
 #include "common.h"
 
 #define DEST_PORT            2000
-#define SERVER_IP_ADDRESS   "127.0.0.1"
+#define SERVER_IP_ADDRESS   "192.168.2.22"
 
 test_struct_t client_data;
 result_struct_t result;
@@ -52,19 +52,15 @@ void setup_tcp_communication() {
 
 	    /*Prompt the user to enter data*/
 	    /*You will want to change the promt for the second task*/
-	    printf("Enter a : ?\n");
-	    scanf("%u", &client_data.a);
-	    printf("Enter b : ?\n");
-	    scanf("%u", &client_data.b);
-	    
-	    /*Code for task 2 goes here*/
-	    /*....*/
+	    printf("Enter name : ?\n");
+	    scanf("%s", &client_data.name);
+	    printf("Enter age : ?\n");
+	    scanf("%u", &client_data.age);
+	    printf("Enter group : ?\n");
+	    scanf("%u", &client_data.group);
 	    
 	    /*step 5 : send the data to server*/
 	    /*Again, keep in mind the type of our msg*/
-
-	    /*Code for task 2 goes here*/
-	    /*....*/
 
 	    sent_recv_bytes = sendto(sockfd, 
 		   &client_data,

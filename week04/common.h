@@ -1,12 +1,13 @@
 typedef struct _test_struct{
-    
-    unsigned int a;
-    unsigned int b;
+    char* name;
+    unsigned int age;
+    char* group;
 } test_struct_t;
 
 
 typedef struct result_struct_{
-
-    unsigned int c;
+    char* name;
+    unsigned int age;
+    char* group;
 
 } result_struct_t;
