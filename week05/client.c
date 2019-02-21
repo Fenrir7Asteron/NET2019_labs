@@ -40,10 +40,10 @@ void setup_udp_communication() {
 
     /*Step 3 : Create a TCP socket*/
     /*Create a socket finally. socket() is a system call, which asks for three paramemeters*/
-    sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_TCP);
+    sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 
-    //connect(sockfd, (struct sockaddr *)&dest,sizeof(struct sockaddr));
+    connect(sockfd, (struct sockaddr *)&dest,sizeof(struct sockaddr));
 
     /*Step 4 : get the data to be sent to server*/
     /*Our client is now ready to send data to server. sendto() sends data to Server*/

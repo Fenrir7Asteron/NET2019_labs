@@ -21,12 +21,12 @@ result_struct_t res_struct;
 char data_buffer[1024];
 
 void
-setup_tcp_server_communication() {
+setup_udp_server_communication() {
 
     /*Step 1 : Initialization*/
     /*Socket handle and other variables*/
     /*Master socket file descriptor, used to accept new client connection only, no data exchange*/
-    int master_sock_tcp_fd = 0,
+    int master_sock_udp_fd = 0,
             sent_recv_bytes = 0,
             addr_len = 0,
             opt = 1;
@@ -41,8 +41,8 @@ setup_tcp_server_communication() {
     struct sockaddr_in server_addr, /*structure to store the server and client info*/
             client_addr;
 
-    /*step 2: tcp master socket creation*/
-    if ((master_sock_tcp_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1) {
+    /*step 2: udp master socket creation*/
+    if ((master_sock_udp_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
         printf("socket creation failed\n");
         exit(1);
     }
@@ -60,19 +60,19 @@ setup_tcp_server_communication() {
     addr_len = sizeof(struct sockaddr);
 
     /* Bind the server. Binding means, we are telling kernel(OS) that any data
-     * you recieve with dest ip address = 192.168.56.101, and tcp port no = 2000, pls send that data to this process
+     * you recieve with dest ip address = 192.168.56.101, and udp port no = 2000, pls send that data to this process
      * bind() is a mechnism to tell OS what kind of data server process is interested in to recieve. Remember, server machine
      * can run multiple server processes to process different data and service different clients. Note that, bind() is
      * used on server side, not on client side*/
 
-    if (bind(master_sock_tcp_fd, (struct sockaddr *) &server_addr, sizeof(struct sockaddr)) == -1) {
+    if (bind(master_sock_udp_fd, (struct sockaddr *) &server_addr, sizeof(struct sockaddr)) == -1) {
         printf("socket bind failed\n");
         return;
     }
 
     struct sockaddr_in sin;
     socklen_t len = sizeof(sin);
-    if (getsockname(master_sock_tcp_fd, (struct sockaddr *)&sin, &len) == -1)
+    if (getsockname(master_sock_udp_fd, (struct sockaddr *)&sin, &len) == -1)
         perror("getsockname");
     else
         printf("port number %d\n", ntohs(sin.sin_port));
@@ -80,10 +80,10 @@ setup_tcp_server_communication() {
 
     /*Step 4 : Tell the Linux OS to maintain the queue of max length to Queue incoming
      * client connections.*/
-    if (listen(master_sock_tcp_fd, 5) < 0) {
-        printf("listen failed\n");
-        return;
-    }
+    //if (listen(master_sock_udp_fd, 5) < 0) {
+    //    printf("listen failed\n");
+    //    return;
+    //}
 
     /* Server infinite loop for servicing the client*/
 
@@ -91,7 +91,7 @@ setup_tcp_server_communication() {
 
         /*Step 5 : initialze and dill readfds*/
         FD_ZERO(&readfds);                     /* Initialize the file descriptor set*/
-        FD_SET(master_sock_tcp_fd, &readfds);  /*Add the socket to this set on which our server is running*/
+        FD_SET(master_sock_udp_fd, &readfds);  /*Add the socket to this set on which our server is running*/
 
         printf("blocked on select System call...\n");
 
@@ -100,10 +100,10 @@ setup_tcp_server_communication() {
         /*state Machine state 1 */
 
         /*Call the select system call, server process blocks here. Linux OS keeps this process blocked untill the data arrives on any of the file Drscriptors in the 'readfds' set*/
-        select(master_sock_tcp_fd + 1, &readfds, NULL, NULL, NULL);
+        select(master_sock_udp_fd + 1, &readfds, NULL, NULL, NULL);
 
         /*Some data on some fd present in set has arrived, Now check on which File descriptor the data arrives, and process accordingly*/
-        if (FD_ISSET(master_sock_tcp_fd, &readfds)) {
+        if (FD_ISSET(master_sock_udp_fd, &readfds)) {
             /*Data arrives on Master socket only when new client connects with the server (that is, 'connect' call is invoked on client side)*/
             printf("New connection recieved recvd, accept the connection. Client and Server completes TCP-3 way handshake at this point\n");
 
@@ -111,7 +111,7 @@ setup_tcp_server_communication() {
              * life of connection with this client to send and recieve msg. Master socket is used only for accepting
              * new client's connection and not for data exchange with the client*/
             /* state Machine state 2*/
-            comm_socket_fd = accept(master_sock_tcp_fd, (struct sockaddr *) &client_addr, &addr_len);
+            comm_socket_fd = accept(master_sock_udp_fd, (struct sockaddr *) &client_addr, &addr_len);
             if (comm_socket_fd < 0) {
 
                 /* if accept failed to return a socket descriptor, display error and exit */
@@ -181,6 +181,6 @@ setup_tcp_server_communication() {
 int
 main(int argc, char **argv) {
 
-    setup_tcp_server_communication();
+    setup_udp_server_communication();
     return 0;
 }
