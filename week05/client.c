@@ -7,7 +7,11 @@
 #include "common.h"
 
 #define DEST_PORT            2000
-#define SERVER_IP_ADDRESS   "192.168.2.22"
+
+//client-1
+#define SERVER_IP_ADDRESS   "192.168.1.1"
+//client-2
+//#define SERVER_IP_ADDRESS   "192.168.2.2"
 
 test_struct_t client_data;
 result_struct_t result;
