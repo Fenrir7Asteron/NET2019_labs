@@ -29,7 +29,7 @@ struct address {
 
 void* serve_client(void* args) {
 	printf("Hello from new thread!\nI will sleep for 10 seconds.\n");
-	sleep(5);
+	sleep(10);
 
 	struct address* address = (struct address*) args;
 
