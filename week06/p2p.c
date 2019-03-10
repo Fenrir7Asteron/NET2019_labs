@@ -147,7 +147,7 @@ void setup_tcp_communication() {
 
 	    printf("Interlocutor's message: %s\n", client_message);
 	    char* response = (char*) malloc(MAX_MESSAGE_LEN);
-            usleep(500);
+            usleep(500000);
 	}
     }	
 }
