@@ -9,7 +9,7 @@
 
 #define DEST_PORT       2000
 #define SERVER_PORT     2000
-#define SERVER_IP_ADDRESS   "192.168.2.22"
+#define SERVER_IP_ADDRESS   "192.168.1.11"
 #define MAX_MESSAGE_LEN 255
 
 char data_buffer[1024];
@@ -102,17 +102,6 @@ void setup_tcp_communication() {
 	   0, 
 	   (struct sockaddr *)&dest, 
 	   sizeof(struct sockaddr));
-    
-    printf("No of bytes sent = %d\n", sent_recv_bytes);
-
-    char* received_message = (char*) malloc(MAX_MESSAGE_LEN);
-    sent_recv_bytes =  recvfrom(sockfd, received_message, MAX_MESSAGE_LEN, 0,
-	            (struct sockaddr *)&dest, &addr_len);
-
-    printf("No of bytes received = %d\n", sent_recv_bytes);
-    
-    printf("Result received\n");
-    printf("%s\n", received_message);
     }
 
 	//Server part
@@ -120,7 +109,7 @@ void setup_tcp_communication() {
         FD_SET(master_sock_tcp_fd, &readfds);
 	
 	struct timeval timeout;
-	timeout.tv_usec = rand() % 500;
+	timeout.tv_sec = (rand() % 2) + 1;
         select(master_sock_tcp_fd + 1, &readfds, NULL, NULL, &timeout);
 
         if (FD_ISSET(master_sock_tcp_fd, &readfds)) {
@@ -158,12 +147,7 @@ void setup_tcp_communication() {
 
 	    printf("Interlocutor's message: %s\n", client_message);
 	    char* response = (char*) malloc(MAX_MESSAGE_LEN);
-	    scanf("Your message: %s\n", response);
-
-            sent_recv_bytes = sendto(comm_socket_fd, response, MAX_MESSAGE_LEN, 0,
-                                         (struct sockaddr *) &client_addr, sizeof(struct sockaddr));
-
-                printf("Server sent %d bytes in reply to client\n", sent_recv_bytes);
+            usleep(500);
 	}
     }	
 }
