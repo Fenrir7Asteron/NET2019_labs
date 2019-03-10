@@ -8,7 +8,7 @@
 
 #define DEST_PORT       2000
 #define SERVER_PORT     2000
-#define SERVER_IP_ADDRESS   "192.168.2.22"
+#define SERVER_IP_ADDRESS   "192.168.1.11"
 #define MAX_MESSAGE_LEN 255
 
 char data_buffer[1024];
@@ -92,8 +92,9 @@ void setup_tcp_communication() {
     if (response >= 0) {
 
     printf("Your message: ");
-    char* message;
+    char* message = (char*) malloc(MAX_MESSAGE_LEN);
     scanf("%s", message);
+    printf("%s\n", message);
 
     sent_recv_bytes = sendto(sockfd, 
 	   message,
@@ -104,7 +105,7 @@ void setup_tcp_communication() {
     
     printf("No of bytes sent = %d\n", sent_recv_bytes);
 
-    char* received_message;
+    char* received_message = (char*) malloc(MAX_MESSAGE_LEN);
     sent_recv_bytes =  recvfrom(sockfd, received_message, MAX_MESSAGE_LEN, 0,
 	            (struct sockaddr *)&dest, &addr_len);
 
@@ -137,7 +138,7 @@ void setup_tcp_communication() {
                    inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
 	    printf("Server ready to service client msgs.\n");
-	    char* client_message = malloc(MAX_MESSAGE_LEN);
+	    char* client_message = (char*) malloc(MAX_MESSAGE_LEN);
 
             sent_recv_bytes = recvfrom(comm_socket_fd, client_message, MAX_MESSAGE_LEN, 0, (struct sockaddr *) &client_addr, &addr_len);
 
@@ -157,10 +158,11 @@ void setup_tcp_communication() {
                     break;
             }
 
-            char* echo_response = malloc(MAX_MESSAGE_LEN);
-	    strcpy(echo_response, client_message);
+	    printf("Interlocutor's message: %s\n", client_message);
+	    char* response = (char*) malloc(MAX_MESSAGE_LEN);
+	    scanf("Your message: %s\n", response);
 
-            sent_recv_bytes = sendto(comm_socket_fd, echo_response, MAX_MESSAGE_LEN, 0,
+            sent_recv_bytes = sendto(comm_socket_fd, response, MAX_MESSAGE_LEN, 0,
                                          (struct sockaddr *) &client_addr, sizeof(struct sockaddr));
 
                 printf("Server sent %d bytes in reply to client\n", sent_recv_bytes);
