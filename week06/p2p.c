@@ -8,13 +8,11 @@
 
 #define DEST_PORT       2000
 #define SERVER_PORT     2000
-#define SERVER_IP_ADDRESS   "192.168.2.22"
+#define SERVER_IP_ADDRESS   "192.168.1.11"
 
 char data_buffer[1024];
 
 void setup_tcp_communication() {
-    /*Step 1 : Initialization*/
-    /*Socket handle*/
     int sockfd = 0, 
         sent_recv_bytes = 0;
 
@@ -22,46 +20,27 @@ void setup_tcp_communication() {
 
     addr_len = sizeof(struct sockaddr);
 
-    /*to store socket addesses : ip address and port*/
     struct sockaddr_in dest;
 
-    /*Step 2: specify server information*/
-    /*Ipv4 sockets, Other values are IPv6*/
     dest.sin_family = AF_INET;
 
-    /*Client wants to send data to server process which is running on server machine, and listening on 
-     * port on DEST_PORT, server IP address SERVER_IP_ADDRESS.
-     * Inform client about which server to send data to : All we need is port number, and server ip address. Pls note that
-     * there can be many processes running on the server listening on different no of ports, 
-     * our client is interested in sending data to server process which is lisetning on PORT = DEST_PORT*/ 
     dest.sin_port = DEST_PORT;
     struct hostent *host = (struct hostent *)gethostbyname(SERVER_IP_ADDRESS);
     dest.sin_addr = *((struct in_addr *)host->h_addr);
-
-    /*Step 3 : Create a TCP socket*/
-    /*Create a socket finally. socket() is a system call, which asks for three paramemeters*/
-    sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
+    
     int master_sock_tcp_fd = 0,
             opt = 1;
     int comm_socket_fd = 0;
     fd_set readfds;
-    struct sockaddr_in server_addr, /*structure to store the server and client info*/
-            client_addr;
+    struct sockaddr_in server_addr, client_addr;
 
     if ((master_sock_tcp_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == -1)  {
         printf("socket creation failed\n");
         exit(1);
     }
 
-    /*Step 3: specify server Information*/
-    server_addr.sin_family = AF_INET;/*This socket will process only ipv4 network packets*/
-    server_addr.sin_port = SERVER_PORT;/*Server will process any data arriving on port no 2000*/
-
-    /*3232249957; //( = 192.168.56.101); Server's IP address,
-    //means, Linux will send all data whose destination address = address of any local interface
-    //of this machine, in this case it is 192.168.56.101*/
-
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = SERVER_PORT;
     server_addr.sin_addr.s_addr = INADDR_ANY;
 
     addr_len = sizeof(struct sockaddr);
@@ -86,6 +65,7 @@ void setup_tcp_communication() {
     while(1) {
     printf("Trying to connect\n");
     //Client part
+    sockfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     int response;
     response = connect(sockfd, (struct sockaddr *)&dest,sizeof(struct sockaddr));
     if (response >= 0) {
