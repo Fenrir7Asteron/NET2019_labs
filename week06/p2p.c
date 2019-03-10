@@ -4,13 +4,11 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <memory.h>
-#include <time.h>
 #include <errno.h>
 
 #define DEST_PORT       2000
 #define SERVER_PORT     2000
-#define SERVER_IP_ADDRESS   "192.168.1.11"
-#define MAX_MESSAGE_LEN 255
+#define SERVER_IP_ADDRESS   "192.168.2.22"
 
 char data_buffer[1024];
 
@@ -86,19 +84,20 @@ void setup_tcp_communication() {
     }
 
     while(1) {
+    printf("Trying to connect\n");
     //Client part
     int response;
     response = connect(sockfd, (struct sockaddr *)&dest,sizeof(struct sockaddr));
     if (response >= 0) {
 
     printf("Your message: ");
-    char* message = (char*) malloc(MAX_MESSAGE_LEN);
-    scanf("%s", message);
-    printf("%s\n", message);
+    memset(data_buffer, 0, sizeof(data_buffer));
+    scanf("%s", data_buffer);
+    printf("%s\n", data_buffer);
 
     sent_recv_bytes = sendto(sockfd, 
-	   message,
-	   MAX_MESSAGE_LEN, 
+	   (char*) data_buffer,
+	   sizeof(data_buffer), 
 	   0, 
 	   (struct sockaddr *)&dest, 
 	   sizeof(struct sockaddr));
@@ -108,9 +107,8 @@ void setup_tcp_communication() {
         FD_ZERO(&readfds);   
         FD_SET(master_sock_tcp_fd, &readfds);
 	
-	struct timeval timeout;
-	timeout.tv_sec = (rand() % 2) + 1;
-        select(master_sock_tcp_fd + 1, &readfds, NULL, NULL, &timeout);
+	printf("Waiting for connection\n");
+        select(master_sock_tcp_fd + 1, &readfds, NULL, NULL, NULL);
 
         if (FD_ISSET(master_sock_tcp_fd, &readfds)) {
             printf("New connection recieved recvd, accept the connection. Client and Server completes TCP-3 way handshake at this point\n");
@@ -125,19 +123,14 @@ void setup_tcp_communication() {
                    inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
 	    printf("Server ready to service client msgs.\n");
-	    char* client_message = (char*) malloc(MAX_MESSAGE_LEN);
+	    memset(data_buffer, 0, sizeof(data_buffer));
 
-            sent_recv_bytes = recvfrom(comm_socket_fd, client_message, MAX_MESSAGE_LEN, 0, (struct sockaddr *) &client_addr, &addr_len);
+            sent_recv_bytes = recvfrom(comm_socket_fd, (char *) data_buffer, sizeof(data_buffer), 0, (struct sockaddr *) &client_addr, &addr_len);
 
             printf("Server recvd %d bytes from client %s:%u\n", sent_recv_bytes,
                        inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
-            if (sent_recv_bytes == 0) {
-                    close(comm_socket_fd);
-                    break;
-            }
-
-            if (client_message == 0) {
+            if (data_buffer == 0) {
 
             	close(comm_socket_fd);
                 printf("Server closes connection with client : %s:%u\n", inet_ntoa(client_addr.sin_addr),
@@ -145,8 +138,7 @@ void setup_tcp_communication() {
                     break;
             }
 
-	    printf("Interlocutor's message: %s\n", client_message);
-	    char* response = (char*) malloc(MAX_MESSAGE_LEN);
+	    printf("Interlocutor's message: %s\n", data_buffer);
             usleep(500000);
 	}
     }	
