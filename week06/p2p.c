@@ -4,11 +4,12 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <memory.h>
+#include <time.h>
 #include <errno.h>
 
 #define DEST_PORT       2000
 #define SERVER_PORT     2000
-#define SERVER_IP_ADDRESS   "192.168.1.11"
+#define SERVER_IP_ADDRESS   "192.168.2.22"
 #define MAX_MESSAGE_LEN 255
 
 char data_buffer[1024];
@@ -86,7 +87,6 @@ void setup_tcp_communication() {
 
     while(1) {
     //Client part
-    printf("trying to connect\n");
     int response;
     response = connect(sockfd, (struct sockaddr *)&dest,sizeof(struct sockaddr));
     if (response >= 0) {
@@ -118,11 +118,9 @@ void setup_tcp_communication() {
 	//Server part
         FD_ZERO(&readfds);   
         FD_SET(master_sock_tcp_fd, &readfds);
-
-        printf("blocked on select System call...\n");
 	
 	struct timeval timeout;
-	timeout.tv_sec = 5;
+	timeout.tv_usec = rand() % 500;
         select(master_sock_tcp_fd + 1, &readfds, NULL, NULL, &timeout);
 
         if (FD_ISSET(master_sock_tcp_fd, &readfds)) {
