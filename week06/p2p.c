@@ -7,8 +7,8 @@
 #include <errno.h>
 
 #define DEST_PORT       2000
-#define SERVER_PORT     3000
-#define SERVER_IP_ADDRESS   "192.168.2.22"
+#define SERVER_PORT     2000
+#define SERVER_IP_ADDRESS   "192.168.1.11"
 #define MAX_MESSAGE_LEN 255
 
 char data_buffer[1024];
@@ -85,6 +85,35 @@ void setup_tcp_communication() {
     }
 
     while(1) {
+    //Client part
+    printf("trying to connect\n");
+    int response;
+    response = connect(sockfd, (struct sockaddr *)&dest,sizeof(struct sockaddr));
+    if (response != 0) {
+
+    printf("Your message: ");
+    char* message;
+    scanf("%s", message);
+
+    sent_recv_bytes = sendto(sockfd, 
+	   message,
+	   MAX_MESSAGE_LEN, 
+	   0, 
+	   (struct sockaddr *)&dest, 
+	   sizeof(struct sockaddr));
+    
+    printf("No of bytes sent = %d\n", sent_recv_bytes);
+
+    char* received_message;
+    sent_recv_bytes =  recvfrom(sockfd, received_message, MAX_MESSAGE_LEN, 0,
+	            (struct sockaddr *)&dest, &addr_len);
+
+    printf("No of bytes received = %d\n", sent_recv_bytes);
+    
+    printf("Result received\n");
+    printf("%s\n", received_message);
+    }
+
 	//Server part
         FD_ZERO(&readfds);   
         FD_SET(master_sock_tcp_fd, &readfds);
@@ -133,37 +162,12 @@ void setup_tcp_communication() {
             char* echo_response;
 	    strcpy(echo_response, client_message);
 
-            sent_recv_bytes = sendto(comm_socket_fd, echo_response, sizeof(MAX_MESSAGE_LEN), 0,
+            sent_recv_bytes = sendto(comm_socket_fd, echo_response, MAX_MESSAGE_LEN, 0,
                                          (struct sockaddr *) &client_addr, sizeof(struct sockaddr));
 
                 printf("Server sent %d bytes in reply to client\n", sent_recv_bytes);
 	}
-		
-    //Client part
-    sleep(2000);
-    connect(sockfd, (struct sockaddr *)&dest,sizeof(struct sockaddr));
-
-    char* message;
-    scanf("%s", message);
-
-    sent_recv_bytes = sendto(sockfd, 
-	   message,
-	   sizeof(MAX_MESSAGE_LEN), 
-	   0, 
-	   (struct sockaddr *)&dest, 
-	   sizeof(struct sockaddr));
-    
-    printf("No of bytes sent = %d\n", sent_recv_bytes);
-
-    char* received_message;
-    sent_recv_bytes =  recvfrom(sockfd, received_message, sizeof(MAX_MESSAGE_LEN), 0,
-	            (struct sockaddr *)&dest, &addr_len);
-
-    printf("No of bytes received = %d\n", sent_recv_bytes);
-    
-    printf("Result received\n");
-    printf("%s\n", received_message);
-    }
+    }	
 }
     
 
