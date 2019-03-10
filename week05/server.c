@@ -28,8 +28,7 @@ struct address {
 };
 
 void* serve_client(void* args) {
-	printf("Hello from new thread!\nI will sleep for 10 seconds.\n");
-	sleep(5);
+	printf("Hello from new thread [%lu]!\n\n", (unsigned long) pthread_self());
 
 	struct address* address = (struct address*) args;
 
@@ -39,9 +38,14 @@ void* serve_client(void* args) {
 
 	result_struct_t result;
 	strcpy(result.name, client_data->name);
-        result.age = 12;
+        result.age = client_data->age;
 	strcpy(result.group, client_data->group);
 
+	
+	printf("Received next data\nName: %s\nAge: %d\nGroup: %s\n", result.name, result.age, result.group);
+	sleep(10);
+
+	result.age = 12;
                 /* Server replying back to client now*/
         int sent_recv_bytes = sendto(sockfd, (char *) &result, sizeof(result_struct_t), 0,
                                          (struct sockaddr *) &client_addr, sizeof(struct sockaddr));
